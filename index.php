@@ -29,6 +29,12 @@ if (isset($_GET['id'])) {
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 680px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
         }
 
         th,
@@ -40,6 +46,10 @@ if (isset($_GET['id'])) {
 
         th {
             background-color: #f2f2f2;
+        }
+        
+        .action-style{
+            display: block;
         }
     </style>
     <script>
@@ -57,43 +67,44 @@ if (isset($_GET['id'])) {
             <h2>Daftar Produk</h2>
             <a href="tambah.php"><button>Tambah</button></a>
         </section>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Produk</th>
-                    <th>Harga</th>
-                    <th>Kategori</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $sql = "SELECT produk.id_produk, produk.nama_produk, produk.harga, 
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Produk</th>
+                        <th>Harga</th>
+                        <th>Kategori</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $sql = "SELECT produk.id_produk, produk.nama_produk, produk.harga, 
                             kategori.nama_kategori, status.nama_status 
                         FROM produk
                         JOIN kategori ON produk.kategori_id = kategori.id_kategori
                         JOIN status ON produk.status_id = status.id_status";
-                $result = $conn->query($sql);
-                $no = 1;
-                while ($row = $result->fetch_assoc()) {
-                ?>
-                    <tr>
-                        <td><?= $no++; ?></td>
-                        <td><?= $row['nama_produk']; ?></td>
-                        <td><?= 'Rp ', number_format($row['harga'], 0, ',', '.'); ?></td>
-                        <td><?= $row['nama_kategori']; ?></td>
-                        <td><?= $row['nama_status']; ?></td>
-                        <td>
-                            <a href="ubah.php?id=<?= $row['id_produk']; ?>"><button>Ubah</button></a>
-                            <button onclick="confirmDelete(<?= $row['id_produk']; ?>)">Hapus</button>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                    $result = $conn->query($sql);
+                    $no = 1;
+                    while ($row = $result->fetch_assoc()) {
+                    ?>
+                        <tr>
+                            <td><?= $no++; ?></td>
+                            <td><?= $row['nama_produk']; ?></td>
+                            <td><?= 'Rp ', number_format($row['harga'], 0, ',', '.'); ?></td>
+                            <td><?= $row['nama_kategori']; ?></td>
+                            <td><?= $row['nama_status']; ?></td>
+                            <td class="action-style">
+                                <a href="ubah.php?id=<?= $row['id_produk']; ?>"><button>Ubah</button></a>
+                                <button onclick="confirmDelete(<?= $row['id_produk']; ?>)">Hapus</button>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 

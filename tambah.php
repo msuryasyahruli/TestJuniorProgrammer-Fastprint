@@ -34,7 +34,7 @@ $status_result = $conn->query("SELECT * FROM status");
     <link rel="stylesheet" href="style.css">
     <style>
         form {
-            width: 350px;
+            max-width: 350px;
             margin: auto;
         }
 

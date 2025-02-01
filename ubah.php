@@ -51,7 +51,7 @@ if (isset($_POST['submit'])) {
     <link rel="stylesheet" href="style.css">
     <style>
         form {
-            width: 350px;
+            max-width: 350px;
             margin: auto;
         }
 

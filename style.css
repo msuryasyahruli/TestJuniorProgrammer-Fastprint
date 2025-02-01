@@ -2,12 +2,14 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.container {
-    padding-inline: 10%;
-}
-
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
 }
