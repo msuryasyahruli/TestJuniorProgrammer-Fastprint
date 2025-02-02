@@ -2,11 +2,13 @@
 include 'config.php';
 
 $limit = 10;
-
+$status = 'bisa dijual';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-$totalQuery = "SELECT COUNT(*) AS total FROM produk";
+$totalQuery = "SELECT COUNT(*) AS total FROM produk 
+               JOIN status ON produk.status_id = status.id_status
+               WHERE status.nama_status = '$status'";
 $totalResult = $conn->query($totalQuery);
 $totalRow = $totalResult->fetch_assoc();
 $totalData = $totalRow['total'];
@@ -21,6 +23,7 @@ $sql = "SELECT produk.id_produk, produk.nama_produk, produk.harga,
         FROM produk
         JOIN kategori ON produk.kategori_id = kategori.id_kategori
         JOIN status ON produk.status_id = status.id_status
+        WHERE nama_status = '$status'
         LIMIT $limit OFFSET $offset";
 
 $result = $conn->query($sql);
@@ -51,7 +54,7 @@ if (isset($_GET['id'])) {
             width: 64px;
             height: 32px;
         }
-
+        
         table {
             width: 100%;
             border-collapse: collapse;
@@ -75,14 +78,11 @@ if (isset($_GET['id'])) {
             background-color: #f2f2f2;
         }
 
-        .action-style {
-            display: block;
-        }
-
         .pagination {
-            margin-top: 20px;
+            margin: 20px 0;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .pagination a {
@@ -92,8 +92,14 @@ if (isset($_GET['id'])) {
         }
 
         .pagination-btn {
-            display: block;
-            gap: 18px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .page-btn {
+            width: 100%;
+            height: auto;
         }
     </style>
     <script>
@@ -111,6 +117,7 @@ if (isset($_GET['id'])) {
             <h2>Daftar Produk</h2>
             <a href="tambah.php"><button>Tambah</button></a>
         </section>
+
         <div class="table-container">
             <table>
                 <thead>
@@ -148,19 +155,17 @@ if (isset($_GET['id'])) {
                     <?php } ?>
                 </tbody>
             </table>
+        </div>
 
-            <div class="pagination">
-                <span><?= $start; ?> - <?= $end; ?> / <?= $totalData; ?></span>
+        <div class="pagination">
+            <span><?= $start; ?> - <?= $end; ?> / <?= $totalData; ?></span>
 
-                <div class="pagination-btn">
-                    <?php if ($page > 1) : ?>
-                        <a href="?page=<?= $page - 1; ?>" class="prev">« Prev</a>
-                    <?php endif; ?>
+            <div class="pagination-btn">
+                <a href="?page=<?= $page - 1; ?>" class="prev"><button class="page-btn" <?= $page <= 1 ? 'disabled' : ''; ?>> « </button></a>
 
-                    <?php if ($page < $totalPages) : ?>
-                        <a href="?page=<?= $page + 1; ?>" class="next">Next »</a>
-                    <?php endif; ?>
-                </div>
+                <?= $page ?>
+
+                <a href="?page=<?= $page + 1; ?>" class="next"><button class="page-btn" <?= $page >= $totalPages ? 'disabled' : ''; ?>> » </button></a>
             </div>
         </div>
     </div>
