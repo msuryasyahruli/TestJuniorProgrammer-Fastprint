@@ -20,11 +20,11 @@ $end = min(($offset + $limit), $totalData);
 
 $sql = "SELECT produk.id_produk, produk.nama_produk, produk.harga, 
                kategori.nama_kategori, status.nama_status 
-        FROM produk
-        JOIN kategori ON produk.kategori_id = kategori.id_kategori
-        JOIN status ON produk.status_id = status.id_status
-        WHERE nama_status = '$status'
-        LIMIT $limit OFFSET $offset";
+               FROM produk
+               JOIN kategori ON produk.kategori_id = kategori.id_kategori
+               JOIN status ON produk.status_id = status.id_status
+               WHERE nama_status = '$status'
+               LIMIT $limit OFFSET $offset";
 
 $result = $conn->query($sql);
 
@@ -101,10 +101,15 @@ if (isset($_GET['id'])) {
             width: 100%;
             height: auto;
         }
+
+        .delete-btn {
+            background-color:rgb(161, 0, 0);
+            color: #f2f2f2;
+        }
     </style>
     <script>
         function confirmDelete(id) {
-            if (confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
+            if (confirm("Apakah anda yakin ingin menghapus produk ini?")) {
                 window.location.href = "index.php?id=" + id;
             }
         }
@@ -143,7 +148,7 @@ if (isset($_GET['id'])) {
                                 <td><?= htmlspecialchars($row['nama_status']); ?></td>
                                 <td>
                                     <a href="ubah.php?id=<?= $row['id_produk']; ?>"><button>Ubah</button></a>
-                                    <button onclick="confirmDelete(<?= $row['id_produk']; ?>)">Hapus</button>
+                                    <button onclick="confirmDelete(<?= $row['id_produk']; ?>)" class="delete-btn">Hapus</button>
                                 </td>
                             </tr>
                         <?php
@@ -161,11 +166,15 @@ if (isset($_GET['id'])) {
             <span><?= $start; ?> - <?= $end; ?> / <?= $totalData; ?></span>
 
             <div class="pagination-btn">
-                <a href="?page=<?= $page - 1; ?>" class="prev"><button class="page-btn" <?= $page <= 1 ? 'disabled' : ''; ?>> « </button></a>
+                <a href="?page=<?= $page - 1; ?>" class="prev">
+                    <button class="page-btn" <?= $page <= 1 ? 'disabled' : ''; ?>> « </button>
+                </a>
 
                 <?= $page ?>
 
-                <a href="?page=<?= $page + 1; ?>" class="next"><button class="page-btn" <?= $page >= $totalPages ? 'disabled' : ''; ?>> » </button></a>
+                <a href="?page=<?= $page + 1; ?>" class="next">
+                    <button class="page-btn" <?= $page >= $totalPages ? 'disabled' : ''; ?>> » </button>
+                </a>
             </div>
         </div>
     </div>
