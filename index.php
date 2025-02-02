@@ -1,11 +1,37 @@
 <?php
 include 'config.php';
 
+$limit = 10;
+
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+$totalQuery = "SELECT COUNT(*) AS total FROM produk";
+$totalResult = $conn->query($totalQuery);
+$totalRow = $totalResult->fetch_assoc();
+$totalData = $totalRow['total'];
+
+$totalPages = ceil($totalData / $limit);
+
+$start = $offset + 1;
+$end = min(($offset + $limit), $totalData);
+
+$sql = "SELECT produk.id_produk, produk.nama_produk, produk.harga, 
+               kategori.nama_kategori, status.nama_status 
+        FROM produk
+        JOIN kategori ON produk.kategori_id = kategori.id_kategori
+        JOIN status ON produk.status_id = status.id_status
+        LIMIT $limit OFFSET $offset";
+
+$result = $conn->query($sql);
+
+$no = $offset + 1;
+
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $sql = "DELETE FROM produk WHERE id_produk = $id";
     if ($conn->query($sql) === TRUE) {
-        echo "<script>alert('Produk berhasil dihapus!'); window.location='index.php';</script>";
+        echo "<script>window.location='index.php';</script>";
     } else {
         echo "Error: " . $conn->error;
     }
@@ -19,7 +45,7 @@ if (isset($_GET['id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tes Programmer</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
         button {
             width: 64px;
@@ -42,14 +68,32 @@ if (isset($_GET['id'])) {
             padding: 8px;
             text-align: center;
             border: 1px solid #ddd;
+            max-width: 300px;
         }
 
         th {
             background-color: #f2f2f2;
         }
-        
-        .action-style{
+
+        .action-style {
             display: block;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pagination a {
+            display: inline-block;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .pagination-btn {
+            display: block;
+            gap: 18px;
         }
     </style>
     <script>
@@ -81,29 +125,43 @@ if (isset($_GET['id'])) {
                 </thead>
                 <tbody>
                     <?php
-                    $sql = "SELECT produk.id_produk, produk.nama_produk, produk.harga, 
-                            kategori.nama_kategori, status.nama_status 
-                        FROM produk
-                        JOIN kategori ON produk.kategori_id = kategori.id_kategori
-                        JOIN status ON produk.status_id = status.id_status";
-                    $result = $conn->query($sql);
-                    $no = 1;
-                    while ($row = $result->fetch_assoc()) {
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
                     ?>
+                            <tr>
+                                <td><?= $no++; ?></td>
+                                <td><?= htmlspecialchars($row['nama_produk']); ?></td>
+                                <td>Rp <?= number_format($row['harga'], 0, ',', '.'); ?></td>
+                                <td><?= htmlspecialchars($row['nama_kategori']); ?></td>
+                                <td><?= htmlspecialchars($row['nama_status']); ?></td>
+                                <td>
+                                    <a href="ubah.php?id=<?= $row['id_produk']; ?>"><button>Ubah</button></a>
+                                    <button onclick="confirmDelete(<?= $row['id_produk']; ?>)">Hapus</button>
+                                </td>
+                            </tr>
+                        <?php
+                        }
+                    } else { ?>
                         <tr>
-                            <td><?= $no++; ?></td>
-                            <td><?= $row['nama_produk']; ?></td>
-                            <td><?= 'Rp ', number_format($row['harga'], 0, ',', '.'); ?></td>
-                            <td><?= $row['nama_kategori']; ?></td>
-                            <td><?= $row['nama_status']; ?></td>
-                            <td class="action-style">
-                                <a href="ubah.php?id=<?= $row['id_produk']; ?>"><button>Ubah</button></a>
-                                <button onclick="confirmDelete(<?= $row['id_produk']; ?>)">Hapus</button>
-                            </td>
+                            <td colspan="6">Tidak ada data produk.</td>
                         </tr>
                     <?php } ?>
                 </tbody>
             </table>
+
+            <div class="pagination">
+                <span><?= $start; ?> - <?= $end; ?> / <?= $totalData; ?></span>
+
+                <div class="pagination-btn">
+                    <?php if ($page > 1) : ?>
+                        <a href="?page=<?= $page - 1; ?>" class="prev">« Prev</a>
+                    <?php endif; ?>
+
+                    <?php if ($page < $totalPages) : ?>
+                        <a href="?page=<?= $page + 1; ?>" class="next">Next »</a>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 </body>

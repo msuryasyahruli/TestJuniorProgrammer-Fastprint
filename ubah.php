@@ -32,7 +32,7 @@ if (isset($_POST['submit'])) {
     $stmt->bind_param("siiii", $nama_produk, $harga, $kategori_id, $status_id, $id_produk);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Produk berhasil diperbarui!'); window.location.href='index.php';</script>";
+        echo "<script>window.location.href='index.php';</script>";
     } else {
         echo "Error: " . $stmt->error;
     }
